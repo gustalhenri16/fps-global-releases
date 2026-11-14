@@ -1,39 +1,46 @@
 # FPS Global — Downloads oficiais
 
-**FPS Global Beta v1.0** é um payload experimental para **PS5 13.60** que permite aplicar patches de 60 FPS em jogos e versões compatíveis, com interface web e controle de ativação/desativação.
+Repositório público destinado exclusivamente à distribuição dos builds compilados do **FPS Global para PS5 13.60**. O desenvolvimento e o código-fonte são mantidos em um repositório separado e privado.
 
-## Download
+## Última versão: FPS Global v1.0.1
 
-**[Baixar FPS Global Beta v1.0](https://github.com/gustalhenri16/fps-global-releases/releases/tag/v1.0-beta)**
+**[Baixar FPS Global v1.0.1](https://github.com/gustalhenri16/fps-global-releases/releases/tag/v1.0.1)**
 
-Na página da versão, baixe o **pacote ZIP** completo (recomendado) ou os arquivos individuais:
+Arquivo: `FPS-Global-v1.0.1-PS5-13.60.elf`.
 
-- `FPS-Global-Manual-13.60.elf` — payload para o PS5
-- `patches.db` — catálogo de patches compatíveis
-- `SHA256SUMS.txt` — somas SHA-256 para verificar os arquivos
+Esta versão inclui autoload de patches compatíveis, botão Ativar/Desativar durante o jogo, preferências persistentes de desativação, atualização sob demanda de 9 repositórios, leitura de MC4/JSON/XML e interface web em modo escuro.
 
-## Como usar
+### Estrutura no PS5
 
-1. Feche o jogo e encerre versões anteriores do FPS Global.
-2. Carregue `FPS-Global-Manual-13.60.elf` pelo método de payload compatível com seu PS5.
-3. Caso já exista `/data/fps60/patches.db`, **faça backup** e substitua-o pelo arquivo desta versão.
-4. Inicie um jogo com patch suportado: o autoload verifica título e versão. Use a interface do FPS Global para ativar/desativar o patch durante a sessão.
+```text
+/data/fps60/
+├── repos/
+│   └── cheats/
+│       ├── json/
+│       ├── mc4/
+│       │   └── PPSA11386_01.018.000.mc4
+│       └── xml/
+├── enabled.txt
+├── disabled_v3.txt
+└── fps60.log
+```
 
-## O que inclui a Beta v1.0
+Os patches baixados ou copiados manualmente são armazenados na mesma estrutura. Os repositórios **não precisam ser baixados a cada início do ELF**. O MC4 integrado do 007 First Light (`PPSA11386 / 01.018.000`) é instalado automaticamente na pasta `mc4` se estiver ausente.
 
-- Autoload de patches compatíveis por jogo e versão.
-- Botão de **ativar/desativar** com o jogo aberto.
-- Controle do **007 First Light — PPSA11386 / 01.018.000**, incluindo os **3 offsets do MC4** e a rotina de desativação validada em teste real no PS5.
-- Notificações com nome do jogo, estado **60 FPS Ativado / Desativado** e crédito do criador.
-- Interface web com modo escuro e catálogo de 181 grupos de patches.
+### Instalação
+
+1. Encerre o jogo e o payload antigo.
+2. Envie o arquivo `FPS-Global-v1.0.1-PS5-13.60.elf` para o PS5 pelo loader de payloads compatível.
+3. Abra `http://IP-DO-PS5:8060/` na mesma rede.
+4. Verifique o jogo e a versão na aba Jogos. Use Ativar/Desativar quando necessário.
+5. Para carregar um patch adicionado manualmente, coloque-o em `repos/cheats/{json,mc4,xml}` e reinicie o ELF.
+
+Consulte os detalhes, fontes integradas e limitações no **[changelog v1.0.1](RELEASE-NOTES-v1.0.1.md)** e na descrição da release.
+
+## Versões anteriores
+
+- [FPS Global Beta v1.0](https://github.com/gustalhenri16/fps-global-releases/releases/tag/v1.0-beta) — versão beta original com banco de patches externo.
 
 ## Avisos
 
-- **Beta experimental.** O funcionamento real de liga/desliga foi confirmado no 007 First Light na versão indicada; outros jogos não estão necessariamente validados.
-- Patches atuam na **memória do processo em execução**, não nos arquivos instalados do jogo. Use por sua conta e risco; podem ocorrer travamentos.
-- Nem todos os jogos suportam 60 FPS e mudar os valores de memória não garante que o motor gráfico mudará imediatamente o limite.
-- Este é o **repositório público de downloads**. O código-fonte de desenvolvimento não é distribuído aqui.
-
-## Versões
-
-Acompanhe as versões na seção **[Releases](https://github.com/gustalhenri16/fps-global-releases/releases)**. Para verificar a integridade dos downloads, execute `sha256sum -c SHA256SUMS.txt` na pasta dos arquivos.
+Software experimental: patches modificam a memória de processos do jogo. O patch deve corresponder ao Title ID e à versão exata; operações de memória não garantem 60 FPS reais em todos os jogos. Patches podem causar travamento e não são recomendados para partidas online.
