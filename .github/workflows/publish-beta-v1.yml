@@ -1,0 +1,100 @@
+name: Publicar FPS Global Beta v1.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-beta-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Baixar arquivos binarios ja aprovados da Beta v1.0
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          BASE="https://github.com/gustalhenri16/ps5-fps-global/releases/download/v1.0-beta"
+          for f in FPS-Global-Manual-13.60.elf patches.db SHA256SUMS.txt; do
+            curl -fL --retry 5 --retry-delay 2 -o "dist/$f" "$BASE/$f"
+          done
+
+      - name: Validar checksums e criar pacote de distribuicao
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum --check SHA256SUMS.txt
+          echo "6e87e7b421f8bc6fe5fddcca1b2af628b475904a1ee943b4752cd7f00526258b  FPS-Global-Manual-13.60.elf" | sha256sum --check -
+          echo "c58dc0cccfe0e44325d758d717292d974ddbfe911ff16a0a903e0bdd26b42481  patches.db" | sha256sum --check -
+          grep -Fq 'PPSA11386' patches.db
+          grep -Fq 'Manual [gusta]' patches.db
+          zip -q FPS-Global-Beta-v1.0-PS5-13.60.zip FPS-Global-Manual-13.60.elf patches.db SHA256SUMS.txt
+          unzip -t FPS-Global-Beta-v1.0-PS5-13.60.zip
+
+      - name: Preparar notas de lançamento
+        run: |
+          cat > RELEASE_NOTES.md <<'NOTES'
+          # FPS Global Beta v1.0 — PS5 13.60
+
+          Primeira versão beta pública para download, baseada na compilação
+          que teve o liga/desliga do patch confirmado em um PS5 real.
+
+          ## Destaques
+
+          - Patches automáticos de 60 FPS para jogos e versões compatíveis
+          - Liga/desliga em tempo real durante a sessão de jogo
+          - 007 First Light (PPSA11386 01.018.000): rotina MC4 com três
+            offsets e recuperação de ValueOff confirmada no console
+          - Interface web com modo escuro
+          - Notificações de FPS Ativado/Desativado com nome e créditos
+          - Banco com 181 grupos de patches
+
+          ## Instalação
+
+          1. Feche os jogos e encerre a instância anterior do FPS Global.
+          2. Carregue o arquivo `FPS-Global-Manual-13.60.elf`.
+          3. Faça backup de um eventual `/data/fps60/patches.db` e substitua
+             pelo novo `patches.db` do pacote para não usar dados antigos.
+          4. Inicie um jogo compatível e utilize a interface web para alternar.
+
+          ## Arquivos
+
+          - `FPS-Global-Beta-v1.0-PS5-13.60.zip`: pacote completo
+          - `FPS-Global-Manual-13.60.elf`: payload executável
+          - `patches.db`: base de dados de patches
+          - `SHA256SUMS.txt`: integridade dos arquivos
+
+          **Atenção:** software experimental. Apenas o cenário de liga/desliga
+          informado para o 007 foi confirmado no console. Compatibilidade,
+          estabilidade e resultado de FPS podem variar conforme jogo e versão.
+          O programa modifica memória de processos em execução.
+
+          Este repositório distribui somente arquivos compilados, sem
+          disponibilizar o código-fonte de desenvolvimento.
+          NOTES
+
+      - name: Criar prerelease publica Beta v1.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view v1.0-beta >/dev/null 2>&1; then
+            echo "Beta v1.0 ja publicada, sem sobrescrever."
+            exit 0
+          fi
+          gh release create v1.0-beta \
+            dist/FPS-Global-Beta-v1.0-PS5-13.60.zip \
+            dist/FPS-Global-Manual-13.60.elf \
+            dist/patches.db \
+            dist/SHA256SUMS.txt \
+            --target main \
+            --title "FPS Global Beta v1.0 — PS5 13.60" \
+            --notes-file RELEASE_NOTES.md \
+            --prerelease
+          gh release view v1.0-beta --json tagName,name,url,isPrerelease,assets
