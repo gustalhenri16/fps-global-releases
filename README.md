@@ -27,6 +27,18 @@ Na página da versão, baixe o **pacote ZIP** completo (recomendado) ou os arqui
 - Notificações com nome do jogo, estado **60 FPS Ativado / Desativado** e crédito do criador.
 - Interface web com modo escuro e catálogo de 181 grupos de patches.
 
+## Enviar patches adicionais
+
+A comunidade pode contribuir com patches para futuras versões, enviando arquivos para:
+
+- [`cheats/mc4/`](cheats/mc4/) — arquivos MC4
+- [`cheats/json/`](cheats/json/) — arquivos JSON
+- [`cheats/xml/`](cheats/xml/) — arquivos XML
+
+Leia as [instruções de contribuição](cheats/README.md) e abra um Pull Request informando jogo, Title ID, versão e créditos do patch.
+
+**Atenção:** patches enviados nessas pastas **não são ativados automaticamente** pela Beta v1.0. Cada patch precisa ser revisado e incluído em uma compilação futura.
+
 ## Avisos
 
 - **Beta experimental.** O funcionamento real de liga/desliga foi confirmado no 007 First Light na versão indicada; outros jogos não estão necessariamente validados.
